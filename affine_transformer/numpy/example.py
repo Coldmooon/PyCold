@@ -17,7 +17,10 @@ input_img = np.concatenate([img1, img2], axis=0)
 # dimension sanity check
 print("Input Img Shape: {}".format(input_img.shape))
 
-im = affine_transformer(input_img, 1000, 1000, rotation=np.pi/3)
+M = np.array([[2, 0, 0],
+              [0, 2, 0]])
+
+im = affine_transformer(input_img, M)
 
 print(im.shape)
 

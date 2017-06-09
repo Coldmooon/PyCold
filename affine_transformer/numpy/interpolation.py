@@ -46,9 +46,9 @@ def affine_grid_generator(height, width, M):
 	batch_grids = np.moveaxis(batch_grids, 1, -1)
 
 	# sanity check
-	print("Transformation Matrices: {}".format(M.shape))
-	print("Sampling Grid: {}".format(sampling_grid.shape))
-	print("Batch Grids: {}".format(batch_grids.shape))
+	# print("Transformation Matrices: {}".format(M.shape))
+	# print("Sampling Grid: {}".format(sampling_grid.shape))
+	# print("Batch Grids: {}".format(batch_grids.shape))
 
 	return batch_grids
 
@@ -113,7 +113,7 @@ def bilinear_sampler(input_img, x, y):
 
 	return out
 
-def affine_transformer(input_image, out_H=None, out_W=None, rotation=None):
+def affine_transformer(input_image, matrix, out_H=None, out_W=None, rotation=None):
 	# grab shape
 	B, H, W, C = input_image.shape
 
@@ -133,6 +133,9 @@ def affine_transformer(input_image, out_H=None, out_W=None, rotation=None):
 	# initialize theta to identity transform
 	M = np.array([[param1, param2, param3],
 				  [param4, param5, param6]])
+
+	if matrix is not None:
+		M = matrix
 
 	# repeat num_batch times
 	M = np.resize(M, (B, 2, 3))
