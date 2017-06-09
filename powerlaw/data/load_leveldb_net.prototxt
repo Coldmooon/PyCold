@@ -1,0 +1,61 @@
+name: "CIFAR10_full"
+layer {
+  name: "cifar"
+  type: "Data"
+  top: "data"
+  top: "label"
+  data_param {
+    source: "/home/coldmoon/Datasets/cifar-10-gcn-zca-4pad/cifar-10-train"
+    batch_size: 500
+  }
+  transform_param {
+    mirror: false
+  }
+  include: { phase: TEST }
+}
+layer {
+  name: "resample"
+  type: "Upsampling"
+  bottom: "data"
+  top: "resample-1.0"
+  top: "resample-0.875"
+  top: "resample-0.75"
+  top: "resample-0.625"
+  top: "resample-1.375"
+  top: "resample-1.25"
+  top: "resample-1.125"
+  transformations_param {
+    scale: 1.0
+  }
+  transformations_param {
+    scale: 0.875
+  }
+  transformations_param {
+    scale: 0.75
+  }
+  transformations_param {
+    scale: 0.625
+  }
+  transformations_param {
+    scale: 1.375
+  }
+  transformations_param {
+    scale: 1.25
+  }
+  transformations_param {
+    scale: 1.125
+  }
+}
+layer {
+  name: "Silence"
+  type: "Silence"
+  bottom: "label"
+  # bottom: "data"
+  bottom: "resample-1.0"
+  bottom: "resample-0.875"
+  bottom: "resample-0.75"
+  bottom: "resample-0.625"
+  bottom: "resample-1.375"
+  bottom: "resample-1.25"
+  bottom: "resample-1.125"
+}
