@@ -23,41 +23,38 @@ def load_t7file():
 
     return dataset
 
-def numpy2lmdb(dataset=None, save_path='./'):
+def numpy2lmdb(dataset=None, name='train', save_path='./'):
 
     if dataset is None:
         dataset = load_t7file()
 
-    sets = ['train', 'test']
+    print('Processing...', name, 'data...')
+    data = dataset[0]
+    print('data shape: ', data.shape)
+    labels = dataset[1]
 
-    for set in sets:
-        print('Processing...', set)
-        data = dataset[set][0]
-        print('data shape: ', data.shape)
-        labels = dataset[set][1]
+    X = np.zeros((data.shape), dtype=np.uint8)
+    y = np.zeros(data.shape[0], dtype=np.int64)
 
-        X = np.zeros((data.shape), dtype=np.uint8)
-        y = np.zeros(data.shape[0], dtype=np.int64)
+    map_size = X.nbytes * 10
+    env = lmdb.open(save_path + name, map_size=1e12)
+    # env = lmdb.open(cifar_caffe_directory, map_size=50000 * 1000 * 5)
+    txn = env.begin(write=True)
 
-        map_size = X.nbytes * 10
-        env = lmdb.open(save_path + set, map_size=1e12)
-        # env = lmdb.open(cifar_caffe_directory, map_size=50000 * 1000 * 5)
-        txn = env.begin(write=True)
+    count = 0
+    for i in range(data.shape[0]):
+        datum = caffe.io.array_to_datum(data[i], int(labels[i]))
+        str_id = '{:08}'.format(count)
+        txn.put(str_id.encode('ascii'), datum.SerializeToString())
 
-        count = 0
-        for i in range(data.shape[0]):
-            datum = caffe.io.array_to_datum(data[i], int(labels[i]))
-            str_id = '{:08}'.format(count)
-            txn.put(str_id.encode('ascii'), datum.SerializeToString())
+        count += 1
+        if count % 1000 == 0:
+            print('already handled with {} pictures'.format(count))
+            txn.commit()
+            txn = env.begin(write=True)
 
-            count += 1
-            if count % 1000 == 0:
-                print('already handled with {} pictures'.format(count))
-                txn.commit()
-                txn = env.begin(write=True)
-
-        txn.commit()
-        env.close()
+    txn.commit()
+    env.close()
 
         # with env.begin(write=True) as txn:
         #     # txn is a Transaction object
