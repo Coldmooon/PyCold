@@ -33,15 +33,16 @@ for i in range(train_data.shape[0]):
 
     img = train_data[i]
 
-    # plt.figure(figsize=(7, 7))
-    # plt.imshow(img.reshape(28, 28), cmap='gray', interpolation='none')
-    # plt.title('Original MNIST', fontsize=20)
-    # plt.axis('off')
-    # plt.show()
+    plt.figure(figsize=(7, 7))
+    plt.imshow(img.reshape(28, 28), cmap='gray', interpolation='none')
+    plt.title('Original MNIST', fontsize=20)
+    plt.axis('off')
+    plt.show()
 
     rotation = np.random.uniform(-np.pi/4, np.pi/4) # * 180 / np.pi
     # scale = np.random.uniform(0.7, 1.2)
-    scale = np.random.uniform(0.83, 1.42) # corresponding to STN (1/0.7, 1/1.2)
+    scale = np.random.uniform(0.7, 10/3)
+    # scale = np.random.uniform(0.83, 1.42) # corresponding to STN (1/0.7, 1/1.2)
 
     R = np.array([[np.cos(rotation), -np.sin(rotation), 0],
                   [np.sin(rotation),  np.cos(rotation), 0],
@@ -53,15 +54,13 @@ for i in range(train_data.shape[0]):
     T = (np.dot(S, R))[0:2,:]
 
     im = affine_transformer(img[None, :,:, None], S)
-
     # train_data[i,:,:] = rotate(train_data[i], rotation, reshape=False)
 
-    # plt.figure(figsize=(7, 7))
-    # plt.imshow(im[0,:,:,0].reshape(28, 28), cmap='gray', interpolation='none')
-    # plt.title('Transformed MNIST', fontsize=20)
-    # plt.axis('off')
-    # plt.show()
-
+    plt.figure(figsize=(7, 7))
+    plt.imshow(im[0,:,:,0].reshape(28, 28), cmap='gray', interpolation='none')
+    plt.title('Transformed MNIST', fontsize=20)
+    plt.axis('off')
+    plt.show()
 
     placed_h_random = np.random.randint(0 - 0.1, canvas[0] - 28)
     placed_w_random = np.random.randint(0 - 0.1, canvas[1] - 28)
@@ -72,11 +71,11 @@ for i in range(train_data.shape[0]):
     train_data_center_only[i, placed_h_center:placed_h_center + 28, placed_w_center:placed_w_center + 28] = img[:,:]
     train_data_rand_placed[i, placed_h_random:placed_h_random + 28, placed_w_random:placed_w_random + 28] = img[:,:]
 
-    # plt.figure(figsize=(7, 7))
-    # plt.imshow(train_data_center_only[i].reshape(canvas[0], canvas[1]), cmap='gray', interpolation='none')
-    # plt.title('Placed MNIST', fontsize=20)
-    # plt.axis('off')
-    # plt.show()
+    plt.figure(figsize=(7, 7))
+    plt.imshow(train_data_center_only[i].reshape(canvas[0], canvas[1]), cmap='gray', interpolation='none')
+    plt.title('no scale', fontsize=20)
+    plt.axis('off')
+    plt.show()
 
 train_data_transformed = np.expand_dims(train_data_transformed, axis=1)
 train_data_center_only = np.expand_dims(train_data_center_only, axis=1)
@@ -98,8 +97,8 @@ for i in range(test_data.shape[0]):
 
     rotation = np.random.uniform(-np.pi/4, np.pi/4) # * 180 / np.pi
     # scale = np.random.uniform(0.7, 1.2)
-    # scale = np.random.uniform(0.7, 10/3)
-    scale = np.random.uniform(0.83, 1.42) # corresponding to STN (1/0.7, 1/1.2)
+    scale = np.random.uniform(0.7, 10/3)
+    # scale = np.random.uniform(0.83, 1.42) # corresponding to STN (1/0.7, 1/1.2)
 
     R = np.array([[np.cos(rotation), -np.sin(rotation), 0],
                   [np.sin(rotation),  np.cos(rotation), 0],
