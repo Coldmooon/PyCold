@@ -19,7 +19,6 @@ train_labels_file = '/media/coldmoon/ExtremePro960G/Datasets/isbi2012seg/train-l
 imgs = Image.open(train_data_file)
 labels = Image.open(train_labels_file)
 
-# show
 # for i in range(30):
 #     print(imgs.tell())
 #     out = imgs.resize((256, 256))
@@ -27,12 +26,12 @@ labels = Image.open(train_labels_file)
 #     out.show()
 #     imgs.show()
 #     print(imgs.size)
-# #     labels.show()
+#     labels.show()
 #     imgs.seek(imgs.tell()+1)
 #     labels.seek(labels.tell() + 1)
 
 
-canvas = [46, 46]
+canvas = [47, 47]
 size = int(imgs.size[0]/2)
 dim_x = size - canvas[0] + 1
 dim_y = size - canvas[1] + 1
@@ -74,8 +73,26 @@ for frame in ImageSequence(imgs):
 
     print('cut out ', train_count, 'training samples and', test_count, 'test samples ...')
 
+
+# data balance
+n_train_class_white = np.sum(train_labels == 255)
+train_class_white_index = np.where(train_labels == 255)[0]
+train_picked_white_index_index = np.random.choice(train_class_white_index.shape[0], 200000, replace=False)
+train_selected_white_index = train_class_white_index[train_picked_white_index_index]
+
+n_train_class_black = np.sum(train_labels == 0)
+train_class_black_index = np.where(train_labels == 0)[0]
+train_picked_black_index_index = np.random.choice(train_class_black_index.shape[0], 200000, replace=False)
+train_selected_black_index = train_class_black_index[train_picked_black_index_index]
+
+train_selected_index = np.append(train_selected_white_index, train_selected_black_index)
+np.random.shuffle(train_selected_index)
+
+train_data_selected = train_dataset[train_selected_index,:,:,:]
+train_labels_selected = train_labels[train_selected_index]
+
 # for torch
-np.save('train_dataset.npy', train_dataset)
+np.save('train_dataset.npy', train_data_selected)
+np.save('train_labels.npy', train_labels_selected)
 np.save('test_dataset.npy', test_dataset)
-np.save('train_labels.npy', train_labels)
 np.save('test_labels.npy', test_labels)
