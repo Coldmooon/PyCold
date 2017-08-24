@@ -74,15 +74,18 @@ for frame in ImageSequence(imgs):
     print('cut out ', train_count, 'training samples and', test_count, 'test samples ...')
 
 
+num_white = 200000
+num_black = 100000
+
 # data balance
 n_train_class_white = np.sum(train_labels == 255)
 train_class_white_index = np.where(train_labels == 255)[0]
-train_picked_white_index_index = np.random.choice(train_class_white_index.shape[0], 200000, replace=False)
+train_picked_white_index_index = np.random.choice(train_class_white_index.shape[0], num_white, replace=False)
 train_selected_white_index = train_class_white_index[train_picked_white_index_index]
 
 n_train_class_black = np.sum(train_labels == 0)
 train_class_black_index = np.where(train_labels == 0)[0]
-train_picked_black_index_index = np.random.choice(train_class_black_index.shape[0], 200000, replace=False)
+train_picked_black_index_index = np.random.choice(train_class_black_index.shape[0], num_black, replace=False)
 train_selected_black_index = train_class_black_index[train_picked_black_index_index]
 
 train_selected_index = np.append(train_selected_white_index, train_selected_black_index)
