@@ -99,8 +99,8 @@ for i in range(train_data.shape[0]):
 
     placed_h_random = np.random.randint(0 - 0.1, canvas[0] - out_shape)
     placed_w_random = np.random.randint(0 - 0.1, canvas[1] - out_shape)
-    placed_h_center = int((canvas[0] - out_shape) / 2)
-    placed_w_center = int((canvas[1] - out_shape) / 2)
+    placed_h_center = int((canvas[0] - 32) / 2)
+    placed_w_center = int((canvas[1] - 32) / 2)
 
     train_data_transformed[i, placed_h_random:placed_h_random + out_shape, placed_w_random:placed_w_random + out_shape, :] = im[0,:,:,:]
     train_data_center_only[i, placed_h_center:placed_h_center + 32, placed_w_center:placed_w_center + 32, :] = img[:,:, :]
@@ -176,7 +176,11 @@ test_data_transformed = np.transpose(test_data_transformed, (0, 3, 1, 2))
 test_labels = np.array(testset.test_labels) + 1
 
 print('train_data_transformed shape:', train_data_transformed.shape)
+print('train_data_transformed mean & std:', np.mean(train_data_transformed, axis=(0,2,3)), np.std(train_data_transformed, axis=(0,2,3)))
+
 print('train_data_center_only shape:', train_data_center_only.shape)
+print('train_data_center_only mean & std:', np.mean(train_data_center_only, axis=(0,2,3)), np.std(train_data_center_only, axis=(0,2,3)))
+
 # print('train_data_rand_placed shape:', train_data_rand_placed.shape)
 print('test_data_transformed shape: ', test_data_transformed.shape)
 
