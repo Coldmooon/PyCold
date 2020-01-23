@@ -1,0 +1,9 @@
+[submodule "datasets/LMDB/calmtools"]
+	path = datasets/LMDB/calmtools
+	url = https://github.com/jasoncorso/calmtools.git
+[submodule "datasets/LMDB/PythonUtilsForCaffe"]
+	path = datasets/LMDB/PythonUtilsForCaffe
+	url = https://github.com/dimkastan/PythonUtilsForCaffe.git
+[submodule "datasets/LMDB/caffe-tools"]
+	path = datasets/LMDB/caffe-tools
+	url = https://github.com/davidstutz/caffe-tools.git
