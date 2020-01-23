@@ -32,6 +32,8 @@ labels = Image.open(train_labels_file)
 
 use_pad = 1
 pad = 23
+num_train = 10
+num_test = 20
 
 canvas = [47, 47]
 size = int(imgs.size[0]/2)
@@ -48,11 +50,11 @@ train_dim_y = train_padded_size - canvas[1] + 1
 test_dim_x = padded_size - canvas[0] + 1
 test_dim_y = padded_size - canvas[1] + 1
 
-train_dataset = np.zeros((train_dim_x * train_dim_y * 25, 1, canvas[0], canvas[1]), dtype=np.uint8)
-test_dataset  = np.zeros((test_dim_x * test_dim_y * 5,  1, canvas[0], canvas[1]), dtype=np.uint8)
+train_dataset = np.zeros((train_dim_x * train_dim_y * num_train, 1, canvas[0], canvas[1]), dtype=np.uint8)
+test_dataset  = np.zeros((test_dim_x * test_dim_y * num_test,  1, canvas[0], canvas[1]), dtype=np.uint8)
 
-train_labels = np.zeros((train_dim_x * train_dim_y * 25), dtype=np.uint8)
-test_labels =  np.zeros((test_dim_x * test_dim_y * 5), dtype=np.uint8)
+train_labels = np.zeros((train_dim_x * train_dim_y * num_train), dtype=np.uint8)
+test_labels =  np.zeros((test_dim_x * test_dim_y * num_test), dtype=np.uint8)
 
 stride = 1
 train_count = 0
@@ -61,7 +63,7 @@ for frame in ImageSequence(imgs):
     idx = frame.tell()
     labels.seek(idx)
     print('processing the', idx, 'th image ... and ', labels.tell(), 'th label')
-    if idx < 25:
+    if idx < num_train:
         im = np.array(frame.resize((train_size, train_size)))
         label = np.array(labels.resize((train_size, train_size)))
         dx = train_dim_x
@@ -84,7 +86,7 @@ for frame in ImageSequence(imgs):
             # padded_patch = zero_padded_im[x : x + canvas[0], y : y + canvas[1]]
             # print('label coor: [', x + canvas[0]/2,';', y + canvas[1]/2,']')
             patch_label = label[x + int(canvas[0]/2), y + int(canvas[1]/2)]
-            if idx < 25:
+            if idx < num_train:
                 train_dataset[train_count, 0, :, :] = patch
                 train_labels[train_count] = patch_label
                 train_count += 1
@@ -97,8 +99,8 @@ for frame in ImageSequence(imgs):
     print('cut out ', train_count, 'training samples and', test_count, 'test samples ...')
 
 
-num_white = 366547
-num_black = 366547
+num_white = 3000
+num_black = 9000
 
 # data balance
 n_train_class_white = np.sum(train_labels == 255)
@@ -117,8 +119,30 @@ np.random.shuffle(train_selected_index)
 train_data_selected = train_dataset[train_selected_index,:,:,:]
 train_labels_selected = train_labels[train_selected_index]
 
+# ---
+num_white = 30000
+num_black = 30000
+
+n_test_class_white = np.sum(test_labels == 255)
+test_class_white_index = np.where(test_labels == 255)[0]
+test_picked_white_index_index = np.random.choice(test_class_white_index.shape[0], num_white, replace=False)
+test_selected_white_index = test_class_white_index[test_picked_white_index_index]
+
+n_test_class_black = np.sum(test_labels == 0)
+test_class_black_index = np.where(test_labels == 0)[0]
+test_picked_black_index_index = np.random.choice(test_class_black_index.shape[0], num_black, replace=False)
+test_selected_black_index = test_class_black_index[test_picked_black_index_index]
+
+test_selected_index = np.append(test_selected_white_index, test_selected_black_index)
+np.random.shuffle(test_selected_index)
+
+test_data_selected = test_dataset[test_selected_index,:,:,:]
+test_labels_selected = test_labels[test_selected_index]
+
 # for torch
 np.save('train_dataset.npy', train_data_selected)
 np.save('train_labels.npy', train_labels_selected)
-np.save('test_dataset.npy', test_dataset)
-np.save('test_labels.npy', test_labels)
+np.save('test_dataset.npy', test_data_selected)
+np.save('test_labels.npy', test_labels_selected)
+# np.save('test_dataset.npy', test_dataset)
+# np.save('test_labels.npy', test_labels)
